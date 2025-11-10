@@ -1,17 +1,14 @@
-# Use official OpenJDK image
-FROM eclipse-temurin:21-jdk
-
-# Set working directory
+# ---- Stage 1: Build ----
+FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
-
-# Copy project files
 COPY . .
-
-# Build app
+RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
-# Expose port 8080
-EXPOSE 8080
+# ---- Stage 2: Run ----
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
 
-# Run the jar file
-CMD ["java", "-jar", "target/spyGamebackend-0.0.1-SNAPSHOT.jar"]
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
