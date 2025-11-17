@@ -24,9 +24,8 @@ public class Category extends BaseEntity {
 
     private String logoUrl;
 
-    @OneToMany(mappedBy = "questionCategory", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Question> questions = new ArrayList<Question>();
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> questions = new ArrayList<>();
 
 
 }

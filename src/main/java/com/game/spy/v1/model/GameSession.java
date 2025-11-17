@@ -21,6 +21,10 @@ public class GameSession extends BaseEntity {
 
     private Integer numberOfRounds;
 
+
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
