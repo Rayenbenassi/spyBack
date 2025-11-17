@@ -1,5 +1,6 @@
 package com.game.spy.v1.dto;
 
+import com.game.spy.v1.model.Category;
 import com.game.spy.v1.model.GameSession;
 import com.game.spy.v1.model.Player;
 import com.game.spy.v1.model.Round;
@@ -22,6 +23,10 @@ public class GameSessionDto {
 
     private boolean finished = false;
 
+    private Integer numberOfRounds;
+
+    private Category category;
+
     private List<Player> players = new ArrayList<Player>();
 
     private List<Round> rounds = new ArrayList<Round>();
@@ -33,6 +38,8 @@ public class GameSessionDto {
         gameSessionDto.setPlayers(gameSession.getPlayers());
         gameSessionDto.setRounds(gameSession.getRounds());
         gameSessionDto.setCurrentRound(gameSession.getCurrentRound());
+        gameSessionDto.setCategory((gameSession.getCategory()));
+        gameSessionDto.setNumberOfRounds(gameSession.getNumberOfRounds());
 
 
         return gameSessionDto;
@@ -45,6 +52,9 @@ public class GameSessionDto {
         gameSession.setFinished(gameSessionDto.isFinished());
         gameSession.setPlayers(gameSessionDto.getPlayers());
         gameSession.setRounds(gameSessionDto.getRounds());
+        gameSession.setCategory((gameSessionDto.getCategory()));
+        gameSession.setNumberOfRounds(gameSessionDto.getNumberOfRounds());
+
 
         return gameSession;
 

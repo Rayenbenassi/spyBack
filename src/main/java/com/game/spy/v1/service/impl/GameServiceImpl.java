@@ -1,9 +1,7 @@
 package com.game.spy.v1.service.impl;
 
-import com.game.spy.v1.model.GameSession;
-import com.game.spy.v1.model.Player;
-import com.game.spy.v1.model.Question;
-import com.game.spy.v1.model.Round;
+import com.game.spy.v1.dto.SessionConfigDto;
+import com.game.spy.v1.model.*;
 import com.game.spy.v1.repo.*;
 import com.game.spy.v1.service.GameService;
 import com.game.spy.v1.service.PlayerService;
@@ -21,9 +19,9 @@ import java.util.Random;
 public class GameServiceImpl implements GameService {
     private final GameSessionRepo gameSessionRepo;
     private final PlayerRepo playerRepo;
-    private final QuestionRepo questionRepo;
     private final RoundRepo roundRepo;
     private final VoteRepo voteRepo;
+    private final CategoryRepo categoryRepo;
     private final QuestionService questionService;
     private final PlayerService playerService;
 
@@ -32,8 +30,12 @@ public class GameServiceImpl implements GameService {
 
     // create new game session
     @Override
-    public GameSession createNewGameSession(List<String> playersNames){
+    public GameSession createNewGameSession(List<String> playersNames, SessionConfigDto config){
         GameSession session = new GameSession();
+        session.setNumberOfRounds(config.getTotalRounds());
+        Category category = categoryRepo.findById(config.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        session.setCategory(category);
         gameSessionRepo.save(session);
 
         playersNames.forEach(name->{
@@ -53,7 +55,8 @@ public class GameServiceImpl implements GameService {
     public Round startNewRound(Long sessionId){
         GameSession session = gameSessionRepo.findById(sessionId)
                 .orElseThrow(()-> new IllegalArgumentException("session not found"));
-        Question question = questionService.getRandomQuestion();
+        Long categoryId = session.getCategory().getId();
+        Question question = questionService.getRandomQuestionByCategory(categoryId);
 
         // choose random spy
         List<Player> players = session.getPlayers();
@@ -136,7 +139,6 @@ public class GameServiceImpl implements GameService {
         if (session.isFinished()) {
             throw new RuntimeException("Session already finished");
         }
-        finishRound(currentRound);
         finishRound(currentRound);
         return startNewRound(sessionId);
     }

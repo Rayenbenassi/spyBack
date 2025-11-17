@@ -26,4 +26,10 @@ public class QuestionServiceImpl implements QuestionService {
     public Question saveQuestion(Question question) {
         return questionRepo.save(question);
     }
+
+    @Override
+    public Question getRandomQuestionByCategory(Long categoryId) {
+        return  questionRepo.getRandomQuestionByCategory(categoryId);
+    }
+
 }
