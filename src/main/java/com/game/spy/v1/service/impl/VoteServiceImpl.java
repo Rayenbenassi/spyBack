@@ -50,7 +50,11 @@ public class VoteServiceImpl implements VoteService {
         return voteRepo.findByRound(round);
     }
 
+
+    @Override
     public List<Vote> getVotesForRound(Long roundId) {
-        return voteRepo.findByRoundId(roundId);
-    }
-}
+        System.out.println("📋 Getting votes for round: " + roundId);
+        List<Vote> votes = voteRepo.findByRoundId(roundId);
+        System.out.println("✅ Found " + votes.size() + " votes for round: " + roundId);
+        return votes;
+    }}

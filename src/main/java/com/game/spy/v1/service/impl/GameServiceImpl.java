@@ -29,6 +29,7 @@ public class GameServiceImpl implements GameService {
 
 
     // create new game session
+// In GameServiceImpl.java - update createNewGameSession
     @Override
     public GameSession createNewGameSession(List<String> playersNames, SessionConfigDto config){
         GameSession session = new GameSession();
@@ -38,13 +39,18 @@ public class GameServiceImpl implements GameService {
         session.setCategory(category);
         gameSessionRepo.save(session);
 
+        System.out.println("🎮 Creating new game session with " + playersNames.size() + " players");
+        System.out.println("📋 Rounds: " + config.getTotalRounds() + " | Category: " + category.getName());
+
         playersNames.forEach(name->{
             Player player = Player.builder()
                     .name(name)
                     .session(session)
+                    .score(0) // Explicitly set initial score
                     .build();
             playerRepo.save(player);
             session.getPlayers().add(player);
+            System.out.println("👤 Created player: " + name + " with ID: " + player.getId());
         });
 
         return session;
@@ -87,28 +93,42 @@ public class GameServiceImpl implements GameService {
         //determine who got the most votes
         List<Object[]> results = voteRepo.countVotesGrouped(roundId);
 
-        if(results.isEmpty()) return;
+        System.out.println("🎯 Finishing round: " + roundId);
+        System.out.println("📊 Vote results: " + results);
+
+        if(results.isEmpty()) {
+            System.out.println("❌ No votes found for round: " + roundId);
+            round.setCompleted(true);
+            roundRepo.save(round);
+            return;
+        }
 
         Long mostVotedPlayerId = (Long) results.get(0)[0];
         long votesCount = (long) results.get(0)[1];
 
         Player spy = round.getSpy();
 
+        System.out.println("🕵️ Spy: " + spy.getName() + " (ID: " + spy.getId() + ")");
+        System.out.println("🗳️ Most voted player ID: " + mostVotedPlayerId);
+        System.out.println("📈 Votes count: " + votesCount);
+
         if(spy.getId().equals(mostVotedPlayerId)){
-            //Players guessed correctly → all except liar gain points
+            System.out.println("✅ Spy was caught! Giving points to all non-spy players");
+            // Players guessed correctly → all except spy gain points
             round.getSession().getPlayers().forEach(p->{
                 if(!p.getId().equals(spy.getId())) {
-                    playerService.updateScore(p.getId(),10);
-                };
-
-            });}
-        else{
-
-             playerService.updateScore(spy.getId(),20);
+                    System.out.println("➕ Giving 10 points to: " + p.getName());
+                    playerService.updateScore(p.getId(), 10);
+                }
+            });
+        } else {
+            System.out.println("🎭 Spy escaped! Giving 20 points to spy: " + spy.getName());
+            playerService.updateScore(spy.getId(), 20);
         }
 
         round.setCompleted(true);
         roundRepo.save(round);
+        System.out.println("🏁 Round " + roundId + " completed successfully");
     }
 
     // --- End session ---
