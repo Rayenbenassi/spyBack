@@ -1,5 +1,6 @@
 package com.game.spy.v1.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,9 +18,14 @@ public class Question extends BaseEntity {
     private String text;
 
     //spy question
-    private String altText;
-    private String category;  // e.g. "food", "culture"
+    private String altText;// e.g. "food", "culture"
     private String locale;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    @JsonBackReference
+    private Category category;
+
 
 
 }

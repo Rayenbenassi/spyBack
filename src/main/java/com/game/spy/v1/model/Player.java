@@ -3,10 +3,11 @@ package com.game.spy.v1.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ManyToAny;
 
 @Entity
-@Builder
+@SuperBuilder
 @Getter
 @Setter
 @AllArgsConstructor

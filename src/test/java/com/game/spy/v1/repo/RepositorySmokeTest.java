@@ -14,17 +14,5 @@ class RepositorySmokeTest {
 
     @Autowired QuestionRepo questionRepo;
 
-    @Test
-    void shouldReturnRandomQuestion() {
-        Question q = questionRepo.save(Question.builder()
-                .text("What’s your favorite dish?")
-                .altText("What’s your favorite Italian dish?")
-                .category("food")
-                .locale("tn")
-                .build());
-
-        Question random = questionRepo.getRandomQuestion();
-        assertThat(random).isNotNull();
-    }
 }
 

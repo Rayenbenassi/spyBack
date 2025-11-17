@@ -1,5 +1,6 @@
 package com.game.spy.v1.dto;
 
+import com.game.spy.v1.model.Category;
 import com.game.spy.v1.model.Question;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public class QuestionDto {
 
     //spy question
     private String altText;
-    private String category;
+    private Category category;
     private String locale;
 
     public static  QuestionDto toDto(Question question){

@@ -6,5 +6,6 @@ public interface QuestionService {
     Question getRandomQuestion();
     Question getRandomQuestionByLocale(String locale);
     Question saveQuestion(Question question);
+    Question getRandomQuestionByCategory(Long categoryId);
 
 }

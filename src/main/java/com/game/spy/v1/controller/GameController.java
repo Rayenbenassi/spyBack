@@ -3,6 +3,7 @@ package com.game.spy.v1.controller;
 import com.game.spy.v1.dto.CreateSessionRequest;
 import com.game.spy.v1.dto.GameSessionDto;
 import com.game.spy.v1.dto.RoundDto;
+import com.game.spy.v1.dto.SessionConfigDto;
 import com.game.spy.v1.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class GameController {
     @PostMapping("/session")
     public GameSessionDto createNewSession(@RequestBody CreateSessionRequest request) {
         return GameSessionDto.toDto(
-                gameService.createNewGameSession(request.getPlayerNames())
+                gameService.createNewGameSession(request.getPlayerNames(), request.getSessionConfigDto())
         );
     }
 

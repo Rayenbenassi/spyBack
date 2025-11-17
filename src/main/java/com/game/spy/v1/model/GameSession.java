@@ -19,6 +19,10 @@ public class GameSession extends BaseEntity {
 
     private boolean finished = false;
 
+    private Integer numberOfRounds;
+
+    private Category category;
+
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Player> players = new ArrayList<Player>();
