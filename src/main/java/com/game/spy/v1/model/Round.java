@@ -34,10 +34,9 @@ public class Round extends BaseEntity {
     private int roundNumber;
     private boolean completed = false;
 
-    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    @JsonManagedReference
-    private List<Vote> votes = new ArrayList<Vote>();
+    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL)
+    @JsonManagedReference("vote-round") // Match the back reference
+    private List<Vote> votes = new ArrayList<>();
 
 
 }
