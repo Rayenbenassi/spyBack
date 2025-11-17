@@ -1,6 +1,7 @@
 package com.game.spy.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,7 +36,8 @@ public class Round extends BaseEntity {
     private boolean completed = false;
 
     @OneToMany(mappedBy = "round", cascade = CascadeType.ALL)
-    @JsonManagedReference("vote-round") // Match the back reference
+    @JsonIgnore // Add this
+    // Match the back reference
     private List<Vote> votes = new ArrayList<>();
 
 

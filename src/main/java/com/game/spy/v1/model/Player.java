@@ -1,6 +1,7 @@
 package com.game.spy.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -24,6 +25,6 @@ public class Player extends BaseEntity {
     //each player belongs to a game session
     @ManyToOne
     @JoinColumn(name = "session_id")
-    @JsonBackReference
+    @JsonIgnore
     private GameSession session;
 }
