@@ -1,24 +1,21 @@
 package com.game.spy.v1.dto;
 
-import com.game.spy.v1.model.Player;
-import com.game.spy.v1.model.Question;
 import com.game.spy.v1.model.Round;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import com.game.spy.v1.model.Question;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoundDto {
-
     private Long id;
     private int roundNumber;
     private boolean completed;
-    private Player spy;
+    private SimplePlayerDto spy; // Use SimplePlayerDto instead of Player
     private Question question;
 
     public static RoundDto toDto(Round round) {
@@ -26,7 +23,7 @@ public class RoundDto {
                 .id(round.getId())
                 .roundNumber(round.getRoundNumber())
                 .completed(round.isCompleted())
-                .spy(round.getSpy())
+                .spy(SimplePlayerDto.fromPlayer(round.getSpy()))
                 .question(round.getQuestion())
                 .build();
     }
