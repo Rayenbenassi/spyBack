@@ -6,6 +6,7 @@ import com.game.spy.v1.repo.*;
 import com.game.spy.v1.service.GameService;
 import com.game.spy.v1.service.PlayerService;
 import com.game.spy.v1.service.QuestionService;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,10 @@ public class GameServiceImpl implements GameService {
     private final CategoryRepo categoryRepo;
     private final QuestionService questionService;
     private final PlayerService playerService;
+    private final EntityManager entityManager; // Add this
 
     private final Random random = new Random();
 
-
-    // create new game session
-// In GameServiceImpl.java - update createNewGameSession
     @Override
     public GameSession createNewGameSession(List<String> playersNames, SessionConfigDto config){
         GameSession session = new GameSession();
@@ -46,7 +45,7 @@ public class GameServiceImpl implements GameService {
             Player player = Player.builder()
                     .name(name)
                     .session(session)
-                    .score(0) // Explicitly set initial score
+                    .score(0)
                     .build();
             playerRepo.save(player);
             session.getPlayers().add(player);
@@ -56,7 +55,6 @@ public class GameServiceImpl implements GameService {
         return session;
     }
 
-    // start new round
     @Override
     public Round startNewRound(Long sessionId){
         GameSession session = gameSessionRepo.findById(sessionId)
@@ -64,7 +62,6 @@ public class GameServiceImpl implements GameService {
         Long categoryId = session.getCategory().getId();
         Question question = questionService.getRandomQuestionByCategory(categoryId);
 
-        // choose random spy
         List<Player> players = session.getPlayers();
         Player spy = players.get(random.nextInt(players.size()));
 
@@ -82,15 +79,11 @@ public class GameServiceImpl implements GameService {
         return round;
     }
 
-    //end round and calculate scores
-
-
     @Override
     public void finishRound(Long roundId){
         Round round = roundRepo.findById(roundId)
                 .orElseThrow(()->new IllegalArgumentException("Round not found"));
 
-        //determine who got the most votes
         List<Object[]> results = voteRepo.countVotesGrouped(roundId);
 
         System.out.println("🎯 Finishing round: " + roundId);
@@ -114,7 +107,6 @@ public class GameServiceImpl implements GameService {
 
         if(spy.getId().equals(mostVotedPlayerId)){
             System.out.println("✅ Spy was caught! Giving points to all non-spy players");
-            // Players guessed correctly → all except spy gain points
             round.getSession().getPlayers().forEach(p->{
                 if(!p.getId().equals(spy.getId())) {
                     System.out.println("➕ Giving 10 points to: " + p.getName());
@@ -128,10 +120,13 @@ public class GameServiceImpl implements GameService {
 
         round.setCompleted(true);
         roundRepo.save(round);
+
+        // Force refresh of the session to get updated scores
+        refreshSession(round.getSession().getId());
+
         System.out.println("🏁 Round " + roundId + " completed successfully");
     }
 
-    // --- End session ---
     @Override
     public void finishSession(Long sessionId) {
         GameSession session = gameSessionRepo.findById(sessionId)
@@ -147,8 +142,23 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameSession getSessionStatus(Long sessionId) {
-        return gameSessionRepo.findById(sessionId)
+        GameSession session = gameSessionRepo.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        // Force refresh to get latest scores
+        refreshSession(sessionId);
+
+        // Get fresh session data
+        GameSession freshSession = gameSessionRepo.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found after refresh"));
+
+        // Debug: Print current scores
+        System.out.println("📊 Session Status - Current Scores:");
+        freshSession.getPlayers().forEach(player ->
+                System.out.println("   " + player.getName() + ": " + player.getScore())
+        );
+
+        return freshSession;
     }
 
     @Override
@@ -161,5 +171,25 @@ public class GameServiceImpl implements GameService {
         }
         finishRound(currentRound);
         return startNewRound(sessionId);
+    }
+
+    // Add this method to force refresh the session
+    private void refreshSession(Long sessionId) {
+        // Clear the persistence context to force fresh data from database
+        entityManager.clear();
+
+        // Alternatively, you can refresh each player individually
+        GameSession session = gameSessionRepo.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        // Refresh each player to get updated scores
+        session.getPlayers().forEach(player -> {
+            entityManager.refresh(player);
+        });
+
+        System.out.println("🔄 Session refreshed - Latest scores:");
+        session.getPlayers().forEach(player ->
+                System.out.println("   " + player.getName() + ": " + player.getScore())
+        );
     }
 }
