@@ -15,8 +15,9 @@ public class RoundDto {
     private Long id;
     private int roundNumber;
     private boolean completed;
-    private SimplePlayerDto spy; // Use SimplePlayerDto instead of Player
+    private SimplePlayerDto spy;
     private Question question;
+    private String spyData;
 
     public static RoundDto toDto(Round round) {
         return RoundDto.builder()
@@ -25,6 +26,7 @@ public class RoundDto {
                 .completed(round.isCompleted())
                 .spy(SimplePlayerDto.fromPlayer(round.getSpy()))
                 .question(round.getQuestion())
+                .spyData(round.getSpyData()) // ADD THIS LINE
                 .build();
     }
 }

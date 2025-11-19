@@ -7,4 +7,15 @@ import java.util.List;
 public interface PlayerService {
     List<Player> getPlayersBySession(Long sessionId);
     Player updateScore(Long playerId, int delta);
+
+
+
+
+ Boolean eliminatePlayer(Long playerId, Long roundId);
+
+    Player getEliminatedPlayerByRound(Long roundId);
+
+     List<Player> getActivePlayersBySession(Long sessionId);
+
+     Player getPlayerById(Long playerId);
 }
