@@ -12,7 +12,7 @@ public interface GameService {
      void finishSession(Long sessionId);
      Round startNewRound(Long sessionId);
      GameSession getSessionStatus(Long sessionId) ;
-    public void finishRound(Long roundId);
+    GameSession  finishRound(Long roundId);
 
     Round nextRound(Long sessionId,Long currentRound);
 }

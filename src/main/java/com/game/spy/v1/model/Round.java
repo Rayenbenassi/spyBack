@@ -2,9 +2,10 @@ package com.game.spy.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +16,21 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Round")
+@Table(name = "round") // Changed to lowercase (recommended)
 public class Round extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "session_id")
     @JsonBackReference(value = "session-rounds")
-
     private GameSession session;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
+
+    @Type(JsonBinaryType.class) // ADD THIS ANNOTATION
+    @Column(columnDefinition = "jsonb")
+    private String spyData;
 
     @ManyToOne
     @JoinColumn(name = "spy_id")
@@ -36,9 +40,6 @@ public class Round extends BaseEntity {
     private boolean completed = false;
 
     @OneToMany(mappedBy = "round", cascade = CascadeType.ALL)
-    @JsonIgnore // Add this
-    // Match the back reference
+    @JsonIgnore
     private List<Vote> votes = new ArrayList<>();
-
-
 }

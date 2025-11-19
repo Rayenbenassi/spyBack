@@ -12,7 +12,5 @@ import java.util.List;
 @Builder
 public class CreateSessionRequest {
     private List<String> playerNames;
-
-
    private  SessionConfigDto sessionConfigDto;
 }

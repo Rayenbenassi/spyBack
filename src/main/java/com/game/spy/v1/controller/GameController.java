@@ -2,11 +2,16 @@ package com.game.spy.v1.controller;
 
 import com.game.spy.v1.dto.CreateSessionRequest;
 import com.game.spy.v1.dto.GameSessionDto;
+import com.game.spy.v1.dto.PlayerDto;
 import com.game.spy.v1.dto.RoundDto;
-import com.game.spy.v1.dto.SessionConfigDto;
+import com.game.spy.v1.model.Player;
 import com.game.spy.v1.service.GameService;
+import com.game.spy.v1.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
 
     private final GameService gameService;
+    private final PlayerService playerService;
 
     // Create a new game session
     @PostMapping("/session")
@@ -61,4 +67,23 @@ public class GameController {
     public void endSession(@PathVariable long sessionId) {
         gameService.finishSession(sessionId);
     }
+
+
+    @GetMapping("/{sessionId}/active-players")
+    public List<PlayerDto> getActivePlayers(@PathVariable long sessionId) {
+        return playerService.getActivePlayersBySession(sessionId)
+                .stream()
+                .map(PlayerDto::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/round/{roundId}/eliminated-player")
+    public PlayerDto getEliminatedPlayer(@PathVariable long roundId) {
+        return PlayerDto.toDto(
+                playerService.getEliminatedPlayerByRound(roundId)
+        );
+    }
+
+
+
 }

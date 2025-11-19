@@ -1,11 +1,9 @@
 package com.game.spy.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ManyToAny;
 
 @Entity
 @SuperBuilder
@@ -21,6 +19,10 @@ public class Player extends BaseEntity {
     private String name;
 
     private int score;
+
+    private Boolean isEliminated = false;
+
+    private Long eliminatedInRoundId = 0L;
 
     //each player belongs to a game session
     @ManyToOne

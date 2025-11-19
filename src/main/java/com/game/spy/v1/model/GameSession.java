@@ -15,11 +15,18 @@ import java.util.List;
 @Table(name = "GameSession")
 public class GameSession extends BaseEntity {
 
+    private GameMode gameMode = GameMode.CLASSIC;
+
     private int currentRound = 0;
 
     private boolean finished = false;
 
     private Integer numberOfRounds;
+
+    private int spiesCount = 1;
+
+    @Column(name = "spy_assignments", columnDefinition = "TEXT")
+    private String spyAssignments;
 
 
 
